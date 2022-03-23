@@ -1,0 +1,25 @@
+.Sections .sections{
+    margin-left: 24px;
+}
+
+.Sections .sections .day{
+    margin-bottom: 23px;
+}
+
+.Sections .sections .day p{
+    font-size: 20px;
+}
+
+.Sections .sections .day .times{
+    margin-top: 22px;
+}
+
+.Sections .sections .day .times button{
+    margin-left: 8px;
+    background-color: var(--orange);
+    color: #FFFFFF;
+    width: 83px;
+    height: 43px;
+    border: none;
+    font-size: 18px;
+}

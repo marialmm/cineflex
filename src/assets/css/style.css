@@ -1,0 +1,19 @@
+* {
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+  --available: #C3CFD9;
+  --available-border: #808F9D;
+  --unavailable: #FBE192;
+  --unavailable-border: #F7C52B;
+  --selected: #8DD7CF;
+  --selected-border: #45BDB0;
+  --orange: #E8833A;
+  --black: #293845;
+  color: var(--black);
+}
+
+h2{
+    font-size: 24px;
+    text-align: center;
+    line-height: 110px;
+}
