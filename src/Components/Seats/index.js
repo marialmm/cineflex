@@ -79,7 +79,7 @@ function Seats() {
           <input className="name" placeholder="Digite seu CPF"></input>
         </section>
       ) : <></>}
-      <Link to="/success">
+      <Link to="/sucesso">
         <button className="book">Reservar assento(s)</button>
       </Link>
     </main>
