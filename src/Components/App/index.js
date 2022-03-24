@@ -15,8 +15,8 @@ function App(){
             <Header />
             <Routes>
                 <Route path="/" element={<Homepage />} />
-                <Route path="/sessoes" element={<Sections />} />
-                <Route path="/assentos" element={<Seats />} />
+                <Route path="/sessoes/:idMovie" element={<Sections />} />
+                <Route path="/assentos/:idSection" element={<Seats />} />
                 <Route path="/sucesso" element={<Success />} />
             </Routes>
         </BrowserRouter>

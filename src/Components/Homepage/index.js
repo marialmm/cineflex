@@ -1,41 +1,26 @@
 import {Link} from "react-router-dom";
+import {useState, useEffect} from "react";
+import axios from "axios";
 
 import "./style.css";
 
 function Homepage(){
-    let movies=[{
-        id: "1",
-        title: "movie 1",
-        posterURL: "https://image.tmdb.org/t/p/w500/7D430eqZj8y3oVkLFfsWXGRcpEG.jpg"
-    },
-    {
-        id: "2",
-        title: "movie 2",
-        posterURL: "https://image.tmdb.org/t/p/w500/7D430eqZj8y3oVkLFfsWXGRcpEG.jpg"
-    },
-    {
-        id: "3",
-        title: "movie 3",
-        posterURL: "https://image.tmdb.org/t/p/w500/7D430eqZj8y3oVkLFfsWXGRcpEG.jpg"
-    },
-    {
-        id: "4",
-        title: "movie 4",
-        posterURL: "https://image.tmdb.org/t/p/w500/7D430eqZj8y3oVkLFfsWXGRcpEG.jpg"
-    },
-    {
-        id: "5",
-        title: "movie 5",
-        posterURL: "https://image.tmdb.org/t/p/w500/7D430eqZj8y3oVkLFfsWXGRcpEG.jpg"
-    }
-]
+    const [movies, setMovies] = useState([]);
+
+    useEffect(()=>{
+        const promise = axios.get('https://mock-api.driven.com.br/api/v5/cineflex/movies');
+        promise.then((response)=>{
+            setMovies(response.data);
+        })
+    }, [])
+
     return(
         <main className="Homepage">
             <h2>Selecione o filme</h2>
             <div className="movies">
                 {movies.map((movie) => {
                     return (
-                    <Link to="/sessoes" key={movie.id} className="movie" >
+                    <Link to={`/sessoes/${movie.id}`} key={movie.id} className="movie" >
                         <img src={movie.posterURL} alt={movie.title} />
                     </Link>)
                 })}
