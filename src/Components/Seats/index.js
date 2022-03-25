@@ -1,91 +1,107 @@
-import { Link, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import styled from "styled-components";
 
-import "./style.css";
-
-function Seats() {
-  const [section, setSection] = useState({ seats: [] });
-  const [selected, setSelected] = useState([]);
-
-  const {idSection} = useParams();
-
-  useEffect(()=>{
-    const promise = axios.get(`https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${idSection}/seats`);
-    promise.then((response)=>{
-      setSection(response.data);
-    });
-    promise.catch((err) => console.log(err.status, err.message));
-  }, [])
-
-  const seats = section.seats;
+function Seats({ seats, setSelected, selected }) {
   const label = [
     {
       title: "Selecionado",
-      type: "selected",
+      color: "var(--selected)",
     },
     {
       title: "Disponível",
-      type: "available",
+      color: "var(--available)",
     },
     {
       title: "Indisponível",
-      type: "unavailable",
+      color: "var(--unavailable)",
     },
   ];
 
-  return seats.length > 0 ? (
-    <main className="Seats">
-      <h2>Selecione o(s) assento(s)</h2>
-      <section className="seats">
-        {seats.map((seat) => {
-          return (
-            <button
-              key={seat.id}
-              className={!selected.includes(seat.name) ?
-                (seat.isAvailable ? "available" : "unavailable") : "selected"}
-              onClick={()=> {if(seat.isAvailable){
-                  if(!selected.includes(seat.name)){
-                setSelected([...selected, seat.name]);
-                } else{
-                  selected.splice(selected.indexOf('b'), 1);
-                  setSelected([...selected]);
-              }} else{
-                alert('Esse assento não está disponível');
+  return (
+    <Section className="Seats">
+      {seats.map((seat) => {
+        return (
+          <Seat
+            key={seat.id}
+            color={
+              !selected.includes(seat.name)
+                ? seat.isAvailable
+                  ? {
+                      color: "var(--available)",
+                      border: "var(--available-border)",
+                    }
+                  : {
+                      color: "var(--unavailable)",
+                      border: "var(--unavailable-border)",
+                    }
+                : { color: "var(--selected)", border: "var(--selected-border)" }
+            }
+            onClick={() => {
+              if (seat.isAvailable) {
+                if (!selected.includes(seat.name)) {
+                  setSelected([...selected, seat.name]);
+                } else {
+                  if(window.confirm("Deseja remover o assento e apagar os dados?")){
+                    selected.splice(selected.indexOf(seat.name), 1);
+                    setSelected([...selected]);
+                  }                  
+                }
+              } else {
+                alert("Esse assento não está disponível");
               }
+              console.log(selected);
             }}
-            >
-              {seat.name}
-            </button>
+          >
+            {seat.name}
+          </Seat>
+        );
+      })}
+      <div className="label">
+        {label.map(({ title, color }) => {
+          return (
+            <Label key={color} color={color}>
+              <div className="color"></div>
+              <p>{title}</p>
+            </Label>
           );
         })}
-        <div className="label">
-          {label.map(({ title, type }) => {
-            const className = `color ${type}`;
-            return (
-              <div key={type}>
-                <div className={className}></div>
-                <p>{title}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-      {selected.length > 0 ? (
-        <section className="buyer">
-          <h3>Nome do comprador</h3>
-          <input className="name" placeholder="Digite seu nome"></input>
-          <h3>CPF do comprador</h3>
-          <input className="name" placeholder="Digite seu CPF"></input>
-        </section>
-      ) : <></>}
-      <Link to="/sucesso">
-        <button className="book">Reservar assento(s)</button>
-      </Link>
-    </main>
-  ) : (
-    <></>
+      </div>
+    </Section>
   );
 }
+
+const Section = styled.section`
+  width: 330px;
+
+  .label {
+    display: flex;
+    justify-content: space-evenly;
+  }
+`;
+
+const Seat = styled.button`
+  width: 26px;
+  height: 26px;
+  font-size: 11px;
+  color: #000000;
+  margin: 0 7px 18px 0;
+  border-radius: 12px;
+  padding: 0;
+  border: 1px solid;
+  background-color: ${(props) => props.color.color};
+  border-color: ${(props) => props.color.border};
+`;
+
+const Label = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .color {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: ${(props) => props.color};
+  }
+`;
 
 export default Seats;

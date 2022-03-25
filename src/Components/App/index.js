@@ -2,7 +2,7 @@ import {BrowserRouter, Routes, Route} from "react-router-dom";
 
 import Header from "./../Header";
 import Homepage from "./../Homepage";
-import Seats from "./../Seats";
+import BookSeats from "./../BookSeats";
 import Sections from "./../Sections";
 import Success from "./../Success";
 
@@ -16,7 +16,7 @@ function App(){
             <Routes>
                 <Route path="/" element={<Homepage />} />
                 <Route path="/sessoes/:idMovie" element={<Sections />} />
-                <Route path="/assentos/:idSection" element={<Seats />} />
+                <Route path="/assentos/:idSection" element={<BookSeats />} />
                 <Route path="/sucesso" element={<Success />} />
             </Routes>
         </BrowserRouter>

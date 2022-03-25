@@ -17,3 +17,7 @@ h2{
     text-align: center;
     line-height: 110px;
 }
+
+button:hover{
+  cursor: pointer;
+}
