@@ -32,6 +32,8 @@ function Homepage() {
 }
 
 const Movies = styled.main`
+  margin-top: 80px;
+
   div {
     display: flex;
     flex-wrap: wrap;

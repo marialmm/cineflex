@@ -2,10 +2,11 @@ import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import Footer from "../Footer";
 
 // import "./style.css";
 
-function Sections() {
+function Sessions() {
   const { idMovie } = useParams();
 
   const [movie, setMovie] = useState({ days: [] });
@@ -22,35 +23,40 @@ function Sections() {
   const sections = movie.days;
 
   return sections.length > 0 ? (
-    <Main>
-      <h2>Selecione o horário</h2>
-      <div>
-        {sections.map((day) => {
-          return (
-            <div key={day.id}>
-              <p>
-                {day.weekday} - {day.date}
-              </p>
-              <div>
-                {day.showtimes.map((section) => {
-                  return (
-                    <Link to={`/assentos/${section.id}`} key={section.id}>
-                      <button>{section.name}</button>
-                    </Link>
-                  );
-                })}
+    <>
+      <Main>
+        <h2>Selecione o horário</h2>
+        <div>
+          {sections.map((day) => {
+            return (
+              <div key={day.id}>
+                <p>
+                  {day.weekday} - {day.date}
+                </p>
+                <div>
+                  {day.showtimes.map((session) => {
+                    return (
+                      <Link to={`/assentos/${session.id}`} key={session.id}>
+                        <button>{session.name}</button>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-    </Main>
+            );
+          })}
+        </div>
+      </Main>
+      <Footer img={movie.posterURL} details={[movie.title]} />
+    </>
   ) : (
     <></>
   );
 }
 
 const Main = styled.main`
+  margin:80px 0 140px;
+
   div {
     margin-left: 24px;
   }
@@ -78,4 +84,4 @@ const Main = styled.main`
   }
 `;
 
-export default Sections;
+export default Sessions;

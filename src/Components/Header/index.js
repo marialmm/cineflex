@@ -11,6 +11,9 @@ function Header() {
 }
 
 const Cineflex = styled.header`
+  position: fixed;
+  top: 0;
+  left: 0;
   background-color: var(--available);
   width: 100%;
   height: 67px;

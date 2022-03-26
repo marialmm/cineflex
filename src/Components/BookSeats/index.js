@@ -1,18 +1,18 @@
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
-// import "./style.css";
 import Seats from "../Seats";
+import Footer from "../Footer";
 
-function BookSeats() {
-  const [section, setSection] = useState({ seats: [] });
+function BookSeats({movie, setMovie}) {
+  const [session, setSession] = useState({ seats: [] });
   const [selected, setSelected] = useState([]);
   const [booked, setBooked] = useState({});
 
   const navigate = useNavigate();
-  const { idSection } = useParams();
+  const { idSession } = useParams();
 
   function updateSelected(selected){
     booked.compradores = [];
@@ -23,18 +23,22 @@ function BookSeats() {
         cpf: "",
       });
     });
+    // seats.forEach((seat) => {
+    //   if(selected.includes(seat.id)){
+    //     seatSelected.push(seat.name);
+    //   }
+    // });
     booked.ids = [...selected];
     setBooked({...booked})
     setSelected([...selected]);
   }
 
-
   useEffect(() => {
     const promise = axios.get(
-      `https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${idSection}/seats`
+      `https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${idSession}/seats`
     );
     promise.then((response) => {
-      setSection(response.data);
+      setSession(response.data);
     });
     promise.catch((err) => console.log(err.status, err.message));
   }, []);
@@ -42,6 +46,11 @@ function BookSeats() {
   function sentData(e){
     e.preventDefault();
     if(validateInput()){
+      setMovie({
+        title: session.movie.title,
+        day: `${session.day.date} ${session.name}`,
+        buyers: booked.compradores
+      })
       const promise = axios.post("https://mock-api.driven.com.br/api/v5/cineflex/seats/book-many", booked);
       promise.then(()=>navigate("/sucesso"));
       promise.catch((err) => console.log(err.status, err.message));
@@ -56,50 +65,51 @@ function BookSeats() {
     return (cpf.length === cpfValido.length);
   }
 
-  function handleInputNameChange(e, index){
-    booked.compradores[index].nome=e.target.value;
-    setBooked({...booked});
-  }
-
-  function handleInputCPFChange(e, index){
-    booked.compradores[index].cpf=e.target.value;
-    setBooked({...booked});
-  }
-
-  const seats = section.seats;
+  const seats = session.seats;
+  const day = seats.length > 0 ? `${session.day.weekday} - ${session.day.date}` : "";
 
   return seats.length > 0 ? (
-    <Main className="BookSeats">
-      <h2>Selecione o(s) assento(s)</h2>
-      <Seats seats={seats} setSelected={updateSelected} selected={selected} />
-      {selected.length > 0 ? (
-        <>
-          <form onSubmit={sentData}>
-            {selected.sort().map((seat, index) => {
-              return(<>
-                <label>Nome do comprador assento {seat}</label>
-                <input 
-                value={booked.compradores[index].nome} 
-                onChange={(e)=>handleInputNameChange(e, index)} 
-                placeholder="Digite seu nome" 
-                required></input>
-                <label>CPF do comprador assento {seat}</label>
-                <input 
-                onChange={(e)=>handleInputCPFChange(e, index)} 
-                placeholder="Digite seu CPF (apenas numeros)"
-                type="number" 
-                required></input>
-              </>)
-            })
-          }
-          <button type="submit">Reservar assento(s)</button>
-          </form>
-        
-        </>
-      ) : (
-        <></>
-      )}
-    </Main>
+    <>
+      <Main className="BookSeats">
+        <h2>Selecione o(s) assento(s)</h2>
+        <Seats seats={seats} setSelected={updateSelected} selected={selected} />
+        {selected.length > 0 ? (
+          <>
+            <form onSubmit={sentData}>
+              {selected.sort().map((seat, index) => {
+                return(<>
+                  <label>Nome do comprador assento {seat}</label>
+                  <input 
+                  value={booked.compradores[index].nome} 
+                  onChange={(e)=>{
+                    booked.compradores[index].nome=e.target.value;
+                    setBooked({...booked});
+                  }} 
+                  placeholder="Digite seu nome" 
+                  required></input>
+                  <label>CPF do comprador assento {seat}</label>
+                  <input 
+                  onChange={(e)=>{
+                    booked.compradores[index].cpf=e.target.value;
+                    setBooked({...booked}); 
+                  }} 
+                  placeholder="Digite seu CPF (apenas numeros)"
+                  type="number" 
+                  required></input>
+                </>)
+              })
+            }
+            <button type="submit">Reservar assento(s)</button>
+            </form>
+          
+          </>
+        ) : (
+          <></>
+        )}
+      </Main>
+      
+      <Footer img={session.movie.posterURL} details={[session.movie.title, day]} />
+    </>
   ) : (
     <></>
   );
@@ -109,7 +119,7 @@ const Main = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 24px 30px;
+  margin: 80px 24px 170px;
 
   h2 {
     line-height: 91px;
