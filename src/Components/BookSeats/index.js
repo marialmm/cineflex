@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
@@ -9,8 +9,25 @@ import Seats from "../Seats";
 function BookSeats() {
   const [section, setSection] = useState({ seats: [] });
   const [selected, setSelected] = useState([]);
+  const [booked, setBooked] = useState({});
 
+  const navigate = useNavigate();
   const { idSection } = useParams();
+
+  function updateSelected(selected){
+    booked.compradores = [];
+    selected.forEach((seat)=>{
+      booked.compradores.push({
+        idAssento: parseInt(seat),
+        nome: "",
+        cpf: "",
+      });
+    });
+    booked.ids = [...selected];
+    setBooked({...booked})
+    setSelected([...selected]);
+  }
+
 
   useEffect(() => {
     const promise = axios.get(
@@ -22,8 +39,31 @@ function BookSeats() {
     promise.catch((err) => console.log(err.status, err.message));
   }, []);
 
-  function sentData(data){
+  function sentData(e){
+    e.preventDefault();
+    if(validateInput()){
+      const promise = axios.post("https://mock-api.driven.com.br/api/v5/cineflex/seats/book-many", booked);
+      promise.then(()=>navigate("/sucesso"));
+      promise.catch((err) => console.log(err.status, err.message));
+    } else{
+      alert('CPF inválido');
+    }
+  }
 
+  function validateInput(){
+    const cpf = booked.compradores.map((comprador) => comprador.cpf);
+    const cpfValido = cpf.filter((comprador) => comprador.length === 11);
+    return (cpf.length === cpfValido.length);
+  }
+
+  function handleInputNameChange(e, index){
+    booked.compradores[index].nome=e.target.value;
+    setBooked({...booked});
+  }
+
+  function handleInputCPFChange(e, index){
+    booked.compradores[index].cpf=e.target.value;
+    setBooked({...booked});
   }
 
   const seats = section.seats;
@@ -31,24 +71,34 @@ function BookSeats() {
   return seats.length > 0 ? (
     <Main className="BookSeats">
       <h2>Selecione o(s) assento(s)</h2>
-      <Seats seats={seats} setSelected={setSelected} selected={selected} />
+      <Seats seats={seats} setSelected={updateSelected} selected={selected} />
       {selected.length > 0 ? (
-        selected.sort().map((seat) => {
-          return (
-            <form className="buyer" key={seat}>
-              <label>Nome do comprador assento {seat}</label>
-              <input className="name" placeholder="Digite seu nome" required></input>
-              <label>CPF do comprador assento {seat}</label>
-              <input className="name" placeholder="Digite seu CPF" required></input>
-            </form>
-          );
-        })
+        <>
+          <form onSubmit={sentData}>
+            {selected.sort().map((seat, index) => {
+              return(<>
+                <label>Nome do comprador assento {seat}</label>
+                <input 
+                value={booked.compradores[index].nome} 
+                onChange={(e)=>handleInputNameChange(e, index)} 
+                placeholder="Digite seu nome" 
+                required></input>
+                <label>CPF do comprador assento {seat}</label>
+                <input 
+                onChange={(e)=>handleInputCPFChange(e, index)} 
+                placeholder="Digite seu CPF (apenas numeros)"
+                type="number" 
+                required></input>
+              </>)
+            })
+          }
+          <button type="submit">Reservar assento(s)</button>
+          </form>
+        
+        </>
       ) : (
         <></>
       )}
-      <Link to="/sucesso">
-        <button className="book">Reservar assento(s)</button>
-      </Link>
     </Main>
   ) : (
     <></>
@@ -90,7 +140,7 @@ const Main = styled.main`
     font-style: italic;
   }
 
-  .book {
+  form button {
     width: 225px;
     height: 42px;
     margin-top: 50px;

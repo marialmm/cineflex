@@ -16,6 +16,9 @@ function Seats({ seats, setSelected, selected }) {
     },
   ];
 
+  let seatSelected = [];
+  selected.forEach((seat) => seatSelected.push(seat.name));
+
   return (
     <Section className="Seats">
       {seats.map((seat) => {
@@ -23,7 +26,7 @@ function Seats({ seats, setSelected, selected }) {
           <Seat
             key={seat.id}
             color={
-              !selected.includes(seat.name)
+              !seatSelected.includes(seat.name)
                 ? seat.isAvailable
                   ? {
                       color: "var(--available)",
@@ -38,7 +41,8 @@ function Seats({ seats, setSelected, selected }) {
             onClick={() => {
               if (seat.isAvailable) {
                 if (!selected.includes(seat.name)) {
-                  setSelected([...selected, seat.name]);
+                  selected.push({ name: seat.name, id: seat.id})
+                  setSelected([...selected]);
                 } else {
                   if(window.confirm("Deseja remover o assento e apagar os dados?")){
                     selected.splice(selected.indexOf(seat.name), 1);
