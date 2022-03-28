@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import Footer from "../Footer";
+import Loading from "../Loading";
 
 function Sessions({ home, setHome }) {
   const { idMovie } = useParams();
@@ -49,7 +50,7 @@ function Sessions({ home, setHome }) {
       <Footer img={movie.posterURL} details={[movie.title]} />
     </>
   ) : (
-    <></>
+    <Loading />
   );
 }
 

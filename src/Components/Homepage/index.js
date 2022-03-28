@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import Loading from "../Loading";
 
 function Homepage({home, setHome}) {
   const [movies, setMovies] = useState([]);
@@ -16,8 +17,8 @@ function Homepage({home, setHome}) {
     });
   }, []);
 
-  return (
-    <Movies>
+  return (movies.length > 0 ? (
+      <Movies>
       <h2>Selecione o filme</h2>
       <div className="movies">
         {movies.map((movie) => {
@@ -29,6 +30,7 @@ function Homepage({home, setHome}) {
         })}
       </div>
     </Movies>
+    ) : <Loading />
   );
 }
 

@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 import Seats from "./../Seats";
 import Footer from "./../Footer";
+import Loading from "../Loading";
 
 function BookSeats({ movie, setMovie }) {
   const [session, setSession] = useState({ seats: [] });
@@ -133,7 +134,7 @@ function BookSeats({ movie, setMovie }) {
       />
     </>
   ) : (
-    <></>
+    <Loading />
   );
 }
 
