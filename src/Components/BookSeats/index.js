@@ -3,33 +3,29 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
-import Seats from "../Seats";
-import Footer from "../Footer";
+import Seats from "./../Seats";
+import Footer from "./../Footer";
 
-function BookSeats({movie, setMovie}) {
+function BookSeats({ movie, setMovie }) {
   const [session, setSession] = useState({ seats: [] });
   const [selected, setSelected] = useState([]);
   const [booked, setBooked] = useState({});
 
   const navigate = useNavigate();
   const { idSession } = useParams();
+  let disabled = true;
 
-  function updateSelected(selected){
+  function updateSelected(selected) {
     booked.compradores = [];
-    selected.forEach((seat)=>{
+    selected.forEach((seat) => {
       booked.compradores.push({
         idAssento: parseInt(seat),
         nome: "",
         cpf: "",
       });
     });
-    // seats.forEach((seat) => {
-    //   if(selected.includes(seat.id)){
-    //     seatSelected.push(seat.name);
-    //   }
-    // });
     booked.ids = [...selected];
-    setBooked({...booked})
+    setBooked({ ...booked });
     setSelected([...selected]);
   }
 
@@ -43,30 +39,46 @@ function BookSeats({movie, setMovie}) {
     promise.catch((err) => console.log(err.status, err.message));
   }, []);
 
-  function sentData(e){
+  function sentData(e) {
     e.preventDefault();
-    if(validateInput()){
+    if (validateInput()) {
       setMovie({
         title: session.movie.title,
         day: `${session.day.date} ${session.name}`,
-        buyers: booked.compradores
-      })
-      const promise = axios.post("https://mock-api.driven.com.br/api/v5/cineflex/seats/book-many", booked);
-      promise.then(()=>navigate("/sucesso"));
+        buyers: booked.compradores,
+      });
+      const promise = axios.post(
+        "https://mock-api.driven.com.br/api/v5/cineflex/seats/book-many",
+        booked
+      );
+      promise.then(() => navigate("/sucesso"));
       promise.catch((err) => console.log(err.status, err.message));
-    } else{
-      alert('CPF inválido');
+    } else {
+      alert("CPF inválido");
     }
   }
 
-  function validateInput(){
+  function validateInput() {
     const cpf = booked.compradores.map((comprador) => comprador.cpf);
     const cpfValido = cpf.filter((comprador) => comprador.length === 11);
-    return (cpf.length === cpfValido.length);
+    return cpf.length === cpfValido.length;
+  }
+
+  function enableButton() {
+    const input = [];
+    booked.compradores.forEach((buyer, index) => {
+      input.push(!buyer.cpf || !buyer.nome);
+    });
+    let final = input[0];
+    input.forEach((bool) => (final = final || bool));
+    disabled = disabled && final;
+
+    return disabled;
   }
 
   const seats = session.seats;
-  const day = seats.length > 0 ? `${session.day.weekday} - ${session.day.date}` : "";
+  const day =
+    seats.length > 0 ? `${session.day.weekday} - ${session.day.date}` : "";
 
   return seats.length > 0 ? (
     <>
@@ -77,38 +89,48 @@ function BookSeats({movie, setMovie}) {
           <>
             <form onSubmit={sentData}>
               {selected.sort().map((seat, index) => {
-                return(<>
-                  <label>Nome do comprador assento {seat}</label>
-                  <input 
-                  value={booked.compradores[index].nome} 
-                  onChange={(e)=>{
-                    booked.compradores[index].nome=e.target.value;
-                    setBooked({...booked});
-                  }} 
-                  placeholder="Digite seu nome" 
-                  required></input>
-                  <label>CPF do comprador assento {seat}</label>
-                  <input 
-                  onChange={(e)=>{
-                    booked.compradores[index].cpf=e.target.value;
-                    setBooked({...booked}); 
-                  }} 
-                  placeholder="Digite seu CPF (apenas numeros)"
-                  type="number" 
-                  required></input>
-                </>)
-              })
-            }
-            <button type="submit">Reservar assento(s)</button>
+                return (
+                  <div key={index}>
+                    <p>Assento {seat % 50 !== 0 ? seat % 50 : 50}</p>
+                    <label>Nome do comprador</label>
+                    <input
+                      value={booked.compradores[index].nome}
+                      onChange={(e) => {
+                        booked.compradores[index].nome = e.target.value;
+                        setBooked({ ...booked });
+                      }}
+                      placeholder="Digite seu nome"
+                      name="name"
+                      required
+                    ></input>
+                    <label>CPF do comprador</label>
+                    <input
+                      onChange={(e) => {
+                        booked.compradores[index].cpf = e.target.value;
+                        setBooked({ ...booked });
+                      }}
+                      placeholder="Digite seu CPF (apenas numeros)"
+                      type="number"
+                      name="cpf"
+                      required
+                    ></input>
+                  </div>
+                );
+              })}
+              <button type="submit" disabled={enableButton()}>
+                Reservar assento(s)
+              </button>
             </form>
-          
           </>
         ) : (
           <></>
         )}
       </Main>
-      
-      <Footer img={session.movie.posterURL} details={[session.movie.title, day]} />
+
+      <Footer
+        img={session.movie.posterURL}
+        details={[session.movie.title, day]}
+      />
     </>
   ) : (
     <></>
@@ -128,6 +150,15 @@ const Main = styled.main`
   form {
     width: 100%;
     margin-top: 42px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  form p {
+    font-size: 20px;
+    line-height: 40px;
+    font-weight: 600;
   }
 
   form label {
@@ -148,18 +179,18 @@ const Main = styled.main`
   form input::placeholder {
     color: #afafaf;
     font-style: italic;
+    opacity: 0.8;
   }
 
   form button {
     width: 225px;
     height: 42px;
     margin-top: 50px;
-    background-color: var(--orange);
-    border-radius: 3px;
-    border: none;
-    color: #ffffff;
-    font-size: 18px;
     line-height: 21px;
+  }
+
+  form button:disabled {
+    opacity: 0.5;
   }
 `;
 

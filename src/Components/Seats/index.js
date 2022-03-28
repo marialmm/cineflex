@@ -1,66 +1,41 @@
 import styled from "styled-components";
+import Seat from "./../Seat";
 
 function Seats({ seats, setSelected, selected }) {
   const label = [
     {
       title: "Selecionado",
       color: "var(--selected)",
+      border: "var(--selected-border)",
     },
     {
       title: "Disponível",
       color: "var(--available)",
+      border: "var(--available-border)",
     },
     {
       title: "Indisponível",
       color: "var(--unavailable)",
+      border: "var(--unavailable-border)",
     },
   ];
-
-  
 
   return (
     <Section className="Seats">
       {seats.map((seat) => {
         return (
           <Seat
+            seat={seat}
+            selected={selected}
+            setSelected={setSelected}
             key={seat.id}
-            color={
-              !selected.includes(seat.id)
-                ? seat.isAvailable
-                  ? {
-                      color: "var(--available)",
-                      border: "var(--available-border)",
-                    }
-                  : {
-                      color: "var(--unavailable)",
-                      border: "var(--unavailable-border)",
-                    }
-                : { color: "var(--selected)", border: "var(--selected-border)" }
-            }
-            onClick={() => {
-              if (seat.isAvailable) {
-                if (!selected.includes(seat.id)) {
-                  setSelected([...selected, seat.id]);
-                } else {
-                  if(window.confirm("Deseja remover o assento e apagar os dados?")){
-
-                    selected.splice(selected.indexOf(seat.id), 1);
-                    setSelected([...selected]);
-                  }                  
-                }
-              } else {
-                alert("Esse assento não está disponível");
-              }
-            }}
-          >
-            {seat.name}
-          </Seat>
+          />
         );
       })}
       <div className="label">
-        {label.map(({ title, color }) => {
+        {label.map(({ title, color, border }) => {
           return (
-            <Label key={color} color={color}>
+            <Label key={color} color={color} border={border}>
               <div className="color"></div>
               <p>{title}</p>
             </Label>
@@ -80,29 +55,23 @@ const Section = styled.section`
   }
 `;
 
-const Seat = styled.button`
-  width: 26px;
-  height: 26px;
-  font-size: 11px;
-  color: #000000;
-  margin: 0 7px 18px 0;
-  border-radius: 12px;
-  padding: 0;
-  border: 1px solid;
-  background-color: ${(props) => props.color.color};
-  border-color: ${(props) => props.color.border};
-`;
-
 const Label = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 
   .color {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background-color: ${(props) => props.color};
+    border: solid 1px ${(props) => props.border};
+    margin-bottom: 5px;
+  }
+
+  p {
+    font-size: 13px;
+    line-height: 15px;
   }
 `;
 

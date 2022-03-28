@@ -2,23 +2,8 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 function Success({ movie, setMovie }) {
-  //   const movie = {
-  //     title: "titulo do filme",
-  //     day: "Dia - data",
-  //     buyers: [
-  //       {
-  //         idAssento: 5601,
-  //         nome: "Nome 1",
-  //         cpf: "11111111111",
-  //       },
-  //       {
-  //         idAssento: 5602,
-  //         nome: "Nome 2",
-  //         cpf: "222222222222",
-  //       },
-  //     ],
-  //   };
   const { title, day, buyers } = movie;
+
   buyers.forEach((buyer) => {
     buyer.idAssento = buyer.idAssento % 50 !== 0 ? buyer.idAssento % 50 : 50;
     let cpf = "";
@@ -33,7 +18,6 @@ function Success({ movie, setMovie }) {
     buyer.cpf = cpf;
   });
 
-  console.log(movie);
   return (
     <Main>
       <h3>Pedido feito com sucesso!</h3>
@@ -44,26 +28,13 @@ function Success({ movie, setMovie }) {
       </section>
       <section>
         <h4>Ingressos</h4>
-        {buyers.map(({ idAssento }) => {
+        {buyers.map(({ idAssento, nome, cpf }) => {
           const seat = idAssento % 50 !== 0 ? idAssento % 50 : 50;
           return (
             <>
-              <p>Assento: {seat}</p>
-            </>
-          );
-        })}
-      </section>
-      <section>
-        <h4>Compradores:</h4>
-        {buyers.map(({ idAssento, nome, cpf }) => {
-          return (
-            <>
-              <p>
-                Nome assento {idAssento}: {nome}
-              </p>
-              <p>
-                CPF assento {idAssento}: {cpf}
-              </p>
+              <p className="seat">Assento {seat}</p>
+              <p>Nome: {nome}</p>
+              <p>CPF: {cpf}</p>
             </>
           );
         })}
@@ -110,15 +81,17 @@ const Main = styled.main`
     line-height: 26px;
   }
 
+  .seat {
+    font-size: 23px;
+    line-height: 40px;
+    font-weight: 500;
+  }
+
   button {
-    margin: 20px 0;
+    margin: 30px 0;
     width: 225px;
     height: 42px;
     border: none;
-    border-radius: 3px;
-    background-color: var(--orange);
-    color: #ffffff;
-    font-size: 18px;
     line-height: 21px;
   }
 `;

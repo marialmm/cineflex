@@ -4,14 +4,13 @@ import axios from "axios";
 import styled from "styled-components";
 import Footer from "../Footer";
 
-// import "./style.css";
-
-function Sessions() {
+function Sessions({ home, setHome }) {
   const { idMovie } = useParams();
 
   const [movie, setMovie] = useState({ days: [] });
 
   useEffect(() => {
+    setHome(false);
     const promise = axios.get(
       `https://mock-api.driven.com.br/api/v5/cineflex/movies/${idMovie}/showtimes`
     );
@@ -20,14 +19,14 @@ function Sessions() {
     });
   }, []);
 
-  const sections = movie.days;
+  const sessions = movie.days;
 
-  return sections.length > 0 ? (
+  return sessions.length > 0 ? (
     <>
       <Main>
         <h2>Selecione o horário</h2>
         <div>
-          {sections.map((day) => {
+          {sessions.map((day) => {
             return (
               <div key={day.id}>
                 <p>
@@ -55,7 +54,7 @@ function Sessions() {
 }
 
 const Main = styled.main`
-  margin:80px 0 140px;
+  margin: 80px 0 140px;
 
   div {
     margin-left: 24px;
@@ -65,22 +64,18 @@ const Main = styled.main`
     margin-bottom: 23px;
   }
 
-  p{
+  p {
     font-size: 20px;
   }
 
-  div > div > div{
+  div > div > div {
     margin: 22px 0 0 0;
   }
 
-  button{
+  button {
     margin-right: 8px;
-    background-color: var(--orange);
-    color: #FFFFFF;
     width: 83px;
     height: 43px;
-    border: none;
-    font-size: 18px;
   }
 `;
 

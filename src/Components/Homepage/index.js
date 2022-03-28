@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
-function Homepage() {
+function Homepage({home, setHome}) {
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
+    setHome(true);
     const promise = axios.get(
       "https://mock-api.driven.com.br/api/v5/cineflex/movies"
     );

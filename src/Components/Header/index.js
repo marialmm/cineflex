@@ -1,11 +1,19 @@
 import styled from "styled-components";
+import { useParams, useNavigate } from "react-router-dom";
 
 // import "./style.css";
 
-function Header() {
+function Header({ home }) {
+  const navigate = useNavigate();
+
   return (
     <Cineflex>
-      <h1>CINEFLEX</h1>
+        {home ? (
+          <></>
+        ) : (
+            <ion-icon name="arrow-undo-sharp" onClick={() => navigate(-1)}></ion-icon>
+        )}
+        <h1>CINEFLEX</h1>
     </Cineflex>
   );
 }
@@ -25,6 +33,14 @@ const Cineflex = styled.header`
     color: var(--orange);
     font-size: 34px;
     line-height: 40px;
+  }
+
+  ion-icon{
+    font-size: 30px;
+    color: var(--orange);
+    position: absolute;
+    top: 18px;
+    left: 20px;
   }
 `;
 
